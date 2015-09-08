@@ -1,0 +1,62 @@
+import tictactoe.data.Board;
+import tictactoe.data.Player;
+import tictactoe.ui.UI;
+
+public class JuegoTriqui {
+
+    private static Player Jugador1;
+    private static Player Jugador2;
+    private static Board board;
+
+    public static void main(String[] args) {
+        startGame();
+    }
+
+    private static void startGame() {
+
+        Jugador1 = new Player('X', true);
+        Jugador2 = new Player('O', false);
+        board = new Board();
+
+        UI.printWelcome(Jugador1, Jugador2);
+
+        play();
+    }
+
+    private static void play() {
+
+        Player current = null;
+        boolean isTie = false;
+        boolean isWinner = false;
+
+        do {
+            current = getCurrentPlayer(current);
+            board = TurnController.playTurn(board, current);
+
+            if (MovementHandler.isWinningMovement(board, current)) {
+                UI.printWinner(current);
+                isWinner = true;
+            } else {
+                if (!TurnController.existFreeSquares(board, Jugador1, Jugador2)) {
+                    UI.printTie();
+                    isTie = true;
+                }
+            }
+
+        } while (!isWinner && !isTie);
+
+    }
+
+    private static Player getCurrentPlayer(Player current) {
+
+        if (current == null) {
+            return Jugador1;
+        } else {
+            if (current == Jugador1) {
+                return Jugador2;
+            } else {
+                return Jugador1;
+            }
+        }
+    }
+}
