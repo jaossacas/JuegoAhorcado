@@ -1,62 +1,160 @@
-import tictactoe.data.Board;
-import tictactoe.data.Player;
-import tictactoe.ui.UI;
+import java.util.Scanner;
+import java.util.Vector;
 
 public class JuegoTriqui {
-
-    private static Player Jugador1;
-    private static Player Jugador2;
-    private static Board board;
-
-    public static void main(String[] args) {
-        startGame();
-    }
-
-    private static void startGame() {
-
-        Jugador1 = new Player('X', true);
-        Jugador2 = new Player('O', false);
-        board = new Board();
-
-        UI.printWelcome(Jugador1, Jugador2);
-
-        play();
-    }
-
-    private static void play() {
-
-        Player current = null;
-        boolean isTie = false;
-        boolean isWinner = false;
-
-        do {
-            current = getCurrentPlayer(current);
-            board = TurnController.playTurn(board, current);
-
-            if (MovementHandler.isWinningMovement(board, current)) {
-                UI.printWinner(current);
-                isWinner = true;
-            } else {
-                if (!TurnController.existFreeSquares(board, Jugador1, Jugador2)) {
-                    UI.printTie();
-                    isTie = true;
-                }
+static int val, x;
+    static boolean bandOcupado;
+    static Scanner entrada = new Scanner(System.in);
+    static Vector tablero = new Vector(9);
+    static Ficha ficha;    
+    public static void main(String[] args) {        
+        for(x = 0; x < 9; x++)
+            tablero.addElement(new Ficha(String.valueOf(x+1)));        
+        mostrarTablero();        
+        for(x = 0; x < 9; x++){
+            
+            if(x % 2 == 0){
+                System.out.print("Jugador 1 >> digite posicion de tablero: ");
+                val = entrada.nextInt();
+                
+                if(desocupado(val)){
+                        ((Ficha)tablero.elementAt(val - 1)).setPiedra("@");
+                        ((Ficha)tablero.elementAt(val - 1)).setJugador(1);
+                        if(triqui(val, 1)){
+                            System.out.print("Jugador 1 >> GANASTE!! TRIQUI");
+                            break;
+                        }
+                }else{
+                     do{
+                         bandOcupado = false;
+                         System.out.print("CASILLA OCUPADA. Jugador 1 >> REPITA posicion de tablero: ");
+                         val = entrada.nextInt();
+                         if(desocupado(val)){
+                                 ((Ficha)tablero.elementAt(val - 1)).setPiedra("@");
+                                 ((Ficha)tablero.elementAt(val - 1)).setJugador(1);
+                                 bandOcupado = true;
+                                 if(triqui(val, 1)){
+                                    System.out.print("Jugador 1 >> GANASTE!! TRIQUI");
+                                    x = 9;
+                                 }
+                         }
+                       }while(!bandOcupado);
+                 }                
+                
+            }else{
+                System.out.print("Jugador 2 >> digite posicion de tablero: ");
+                val = entrada.nextInt();
+                
+                if(desocupado(val)){
+                        ((Ficha)tablero.elementAt(val - 1)).setPiedra("X");
+                        ((Ficha)tablero.elementAt(val - 1)).setJugador(2);
+                        if(triqui(val, 2)){
+                            System.out.print("Jugador 2 >> GANASTE!! FELICIDADES");
+                            break;
+                        }
+                }else{
+                     do{
+                            bandOcupado = false;
+                            System.out.print("CASILLA OCUPADA. Jugador 2 >> REPITA posicion de tablero: "); 
+                            val = entrada.nextInt();
+                            if(desocupado(val)){
+                                    ((Ficha)tablero.elementAt(val - 1)).setPiedra("X");
+                                    ((Ficha)tablero.elementAt(val - 1)).setJugador(2);
+                                    bandOcupado = true;
+                                    if(triqui(val, 2)){
+                                        System.out.print("Jugador 2 >> GANASTE!! TRIQUI");
+                                        x = 9;
+                                    }
+                            }
+                      }while(!bandOcupado);
+                }                
             }
-
-        } while (!isWinner && !isTie);
-
-    }
-
-    private static Player getCurrentPlayer(Player current) {
-
-        if (current == null) {
-            return Jugador1;
-        } else {
-            if (current == Jugador1) {
-                return Jugador2;
-            } else {
-                return Jugador1;
-            }
+            mostrarTablero();
         }
+        mostrarTablero();
+    }
+    
+    public static boolean triqui(int pos, int jugador){
+        boolean band = false;
+        switch(pos){
+            case 1:
+                if( ((Ficha)tablero.elementAt(1)).getJugador() == jugador && ((Ficha)tablero.elementAt(2)).getJugador() == jugador || ((Ficha)tablero.elementAt(3)).getJugador() == jugador && ((Ficha)tablero.elementAt(6)).getJugador() == jugador || ((Ficha)tablero.elementAt(4)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador )
+                    band = true;
+                break;
+            case 2:
+                if( ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(2)).getJugador() == jugador || ((Ficha)tablero.elementAt(4)).getJugador() == jugador && ((Ficha)tablero.elementAt(7)).getJugador() == jugador  )
+                    band = true;
+                break;
+            case 3:
+                if( ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(1)).getJugador() == jugador || ((Ficha)tablero.elementAt(5)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador || ((Ficha)tablero.elementAt(4)).getJugador() == jugador && ((Ficha)tablero.elementAt(6)).getJugador() == jugador  )
+                    band = true;
+                break;
+            case 4:
+                if( ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(6)).getJugador() == jugador || ((Ficha)tablero.elementAt(4)).getJugador() == jugador && ((Ficha)tablero.elementAt(5)).getJugador() == jugador  )
+                    band = true;
+                break;
+            case 5:
+                if( ((Ficha)tablero.elementAt(1)).getJugador() == jugador && ((Ficha)tablero.elementAt(7)).getJugador() == jugador || ((Ficha)tablero.elementAt(3)).getJugador() == jugador && ((Ficha)tablero.elementAt(5)).getJugador() == jugador || ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador || ((Ficha)tablero.elementAt(2)).getJugador() == jugador && ((Ficha)tablero.elementAt(6)).getJugador() == jugador )
+                    band = true;
+                break;
+            case 6:
+                if( ((Ficha)tablero.elementAt(2)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador || ((Ficha)tablero.elementAt(3)).getJugador() == jugador && ((Ficha)tablero.elementAt(4)).getJugador() == jugador  )
+                    band = true;
+                break;
+            case 7:
+                if( ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(3)).getJugador() == jugador || ((Ficha)tablero.elementAt(7)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador  || ((Ficha)tablero.elementAt(2)).getJugador() == jugador && ((Ficha)tablero.elementAt(4)).getJugador() == jugador)
+                    band = true;
+                break;
+            case 8:
+                if( ((Ficha)tablero.elementAt(1)).getJugador() == jugador && ((Ficha)tablero.elementAt(4)).getJugador() == jugador || ((Ficha)tablero.elementAt(6)).getJugador() == jugador && ((Ficha)tablero.elementAt(8)).getJugador() == jugador  )
+                    band = true;
+                break;
+            case 9:
+                if( ((Ficha)tablero.elementAt(2)).getJugador() == jugador && ((Ficha)tablero.elementAt(5)).getJugador() == jugador || ((Ficha)tablero.elementAt(6)).getJugador() == jugador && ((Ficha)tablero.elementAt(7)).getJugador() == jugador  || ((Ficha)tablero.elementAt(0)).getJugador() == jugador && ((Ficha)tablero.elementAt(4)).getJugador() == jugador )
+                    band = true;
+                break;
+        }
+        return band;
+    } 
+    
+    public static boolean desocupado(int pos){
+        boolean band = false;
+        if( (((Ficha)tablero.elementAt(pos - 1)).getJugador()!=1) && (((Ficha)tablero.elementAt(pos - 1)).getJugador()!=2) )
+            band = true;
+        
+        return band;
+    }
+    
+    public static void mostrarTablero(){
+        int c =0;
+        for(int x = 0; x < 9; x++){
+            c++;
+            if((c-1) % 3 == 0){
+                System.out.println();
+                System.out.print("------------------------");
+                System.out.println();
+            }
+            System.out.print("   "+((Ficha)tablero.elementAt(x)).getPiedra()+"   |");
+        }
+        System.out.println("\n");
+    }
+}
+class Ficha{
+    int jugador=0;
+    String piedra;
+    Ficha(String pos){
+       piedra = pos;
+    }
+    public void setJugador(int jugador){
+        this.jugador = jugador;
+    }
+    public int getJugador(){
+        return jugador;
+    }
+    public void setPiedra(String pos){
+        piedra = pos;
+    }
+    public String getPiedra(){
+        return piedra;
     }
 }
